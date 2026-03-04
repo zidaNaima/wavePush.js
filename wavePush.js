@@ -1,15 +1,92 @@
 const canvas = document.getElementById('wavepush');
+canvas.style.overflow = 'hidden';
 const ctx = canvas.getContext('2d');
 var w = canvas.width = window.innerWidth;
 var h = canvas.height = window.innerHeight;
 
-var waveCount = 12;
-var numberOfParticles = 12;
-var bandHeight = h / waveCount;
-var offScreen = 100;
-
+let offScreen = 100;
 let wavesArray;
 let offset = 0;
+
+var waveCount, bandHeight, numberOfParticles, waveColor, waveSize, randomMult;
+
+// Set customizeable value defaults
+function setDefaultValues() {
+    offScreen = 100;
+    waveCount = 12;
+    bandHeight = h / waveCount;
+    numberOfParticles = 12;
+    waveColor = '#fff';
+    waveSize = 8;
+    randomMult = 1;
+}
+
+setDefaultValues();
+
+// ----------------------------------------------
+const form = document.forms[0];
+const apply = document.getElementById('apply');
+const reset = document.getElementById('reset');
+
+// Customizeable form input processing
+var pending;
+apply.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (form.lineColor.value !== "")
+        waveColor = form.lineColor.value;
+
+    if (form.waveCount.value !== "") {
+        pending = parseInt(form.waveCount.value);
+        if (Number.isInteger(pending)) {
+            if (pending < 1) pending = 1;
+            if (pending > 500) pending = 500;
+            waveCount = pending;
+            bandHeight = h / waveCount;
+        }
+    }
+
+    if (form.size.value !== "") {
+        pending = parseInt(form.size.value);
+        if (Number.isInteger(pending)) {
+            if (pending < 1) pending = 1;
+            if (pending > 50) pending = 50;
+            waveSize = pending;
+        }
+    }
+
+    if (form.particleCount.value !== "") {
+        pending = parseInt(form.particleCount.value);
+        if (Number.isInteger(pending)) {
+            if (pending < 3) pending = 3;
+            if (pending > 200) pending = 200;
+            numberOfParticles = pending;
+        }
+    }
+
+    if (form.random.value !== "") {
+        pending = parseInt(form.random.value);
+        if (Number.isInteger(pending)) {
+            if (pending < 1) pending = 1;
+            if (pending > 100) pending = 100;
+            randomMult = pending / 10;
+        }
+    }
+
+    init();
+});
+
+// Reset form input values
+reset.addEventListener('click', (e) => {
+    e.preventDefault(); // Prevent page refresh
+    form.lineColor.value = "";
+    form.waveCount.value = "";
+    form.size.value = "";
+    form.particleCount.value = "";
+    form.random.value = "";
+
+    setDefaultValues(); // Reset values
+    init();
+});
 
 // ----------------------------------------------
 
@@ -54,8 +131,8 @@ function init() {
         let y = bandHeight * (i + 1) - bandHeight / 2; // The middle of their band
 
         for (let p = 0; p < numberOfParticles; p++) {
-            let x = -offScreen + ((w + offScreen * 2) / (numberOfParticles - 1)* p);
-            
+            let x = -offScreen + ((w + offScreen * 2) / (numberOfParticles - 1) * p);
+
             particlesArray.push({
                 x,
                 y,
@@ -64,7 +141,7 @@ function init() {
                 vX: 0,
                 vY: 0,
                 amplitude: 5 + Math.random() * 30,
-                period: Math.random()* Math.PI * 2,
+                period: Math.random() * Math.PI * 2,
                 length: 0.005 + Math.random() * 0.01
             });
         }
@@ -81,7 +158,7 @@ function animateParticles() {
 
         for (let j = 0; j < wave.length; j++) {
             p = wave[j];
-            const layer1 = Math.sin(offset + p.period + (p.xPos * p.length)) * p.amplitude;
+            const layer1 = Math.sin(offset + p.period + (p.xPos * p.length)) * p.amplitude * randomMult;
             const layer2 = Math.sin(offset * 2.5 + (p.xPos * 0.03)) * p.amplitude * 0.4;
             const layer3 = Math.sin(offset * 5 + (p.xPos * 0.08)) * 5;
 
@@ -108,8 +185,8 @@ function animateParticles() {
         }
 
         ctx.beginPath();
-        ctx.strokeStyle = '#fff';
-        ctx.lineWidth = 15;
+        ctx.strokeStyle = waveColor;
+        ctx.lineWidth = waveSize;
         ctx.lineCap = 'round';
 
         ctx.moveTo(wave[0].x, wave[0].y);

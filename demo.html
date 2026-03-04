@@ -11,8 +11,46 @@
 <body>
 
     <canvas id="wavepush"></canvas>
-    <script src="wavePush.js"></script>
+
+    <section id="customize">
+        <div class="expand-btn">More Info</div>
+        <div class="expand-cntn opacity-0">
+            <p>
+                It is reccomended to only increase one attribute to near its max value at a time. Most max values work
+                best at a line weight of 1.
+            </p>
+            <p>
+                Values that are out of range of the given reccomendation are set to either the min or max of said
+                range.
+            </p>
+        </div>
+        <div class="expand-btn">Presets</div>
+        <div class="expand-cntn opacity-0">
+            <p>
+                Come back later to view pre-made wave styles!
+            </p>
+        </div>
+
+        <form>
+            <label for="lineColor">Line Color</label>
+            <input type="text" placeholder="#58dc23cc, rgba(0, 0, 0, 0.5)" name="lineColor">
+            <label for="waveCount">Wave Count</label>
+            <input type="text" placeholder="(1 - 500)" name="waveCount">
+            <label for="size">Line Weight</label>
+            <input type="text" placeholder="(1 - 50)" name="size">
+            <label for="particleCount">Peak Count</label>
+            <input type="text" placeholder="(3 - 200)" name="particleCount">
+            <label for="random">Randomness</label>
+            <input type="text" placeholder="(1 - 100)" name="random">
+
+            <button id="apply">Apply Changes</button>
+            <button id="reset">Reset All</button>
+        </form>
+    </section>
 
 </body>
+
+<script src="wavePush.js"></script>
+<script src="demo.js"></script>
 
 </html>
